@@ -5,7 +5,7 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from io import BytesIO
 from utils import send_email
-
+from models import MenuItem
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # 解决跨域问题
 
@@ -15,7 +15,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-from models import MenuItem
+
 
 # 允许的图片类型
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}

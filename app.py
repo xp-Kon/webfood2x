@@ -7,28 +7,30 @@ from io import BytesIO
 from utils import send_email
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # 解决跨域问题
 
-# 数据库配置，请将 DATABASE_URL 替换为 Railway 提供的 PostgreSQL 连接字符串
+# 使用 Railway 提供的数据库（PostgreSQL）
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:XdlibJgxZnCzvkTNlcXtmlKZJrHGTmPf@postgres.railway.internal:5432/railway")
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 from models import MenuItem
 
-def allowed_file(filename):
-    return '.' in filename
+# 允许的图片类型
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
-# 获取所有菜品（不包含图片数据，图片通过单独接口获取）
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# 获取所有菜品信息（不包含图片）
 @app.route("/menu", methods=["GET"])
 def get_menu():
     menu = MenuItem.query.all()
-    return jsonify([{
-        "id": item.id,
-        "name": item.name,
-        # 图片地址使用 /image/<id> 接口返回图片数据
-        "image_url": f"/image/{item.id}"
-    } for item in menu])
+    return jsonify([
+        {"id": item.id, "name": item.name, "image_url": f"/image/{item.id}"}
+        for item in menu
+    ])
 
 # 添加菜品（支持上传图片文件，将图片以二进制形式存入数据库）
 @app.route("/add_item", methods=["POST"])
@@ -39,10 +41,10 @@ def add_item():
 
     if "image" not in request.files:
         return jsonify({"error": "未提供图片文件"}), 400
+
     file = request.files["image"]
     if file and allowed_file(file.filename):
-        # 读取图片二进制数据和 MIME 类型
-        image_data = file.read()
+        image_data = file.read()  # 读取二进制数据
         image_mimetype = file.mimetype
     else:
         return jsonify({"error": "无效的文件类型"}), 400
@@ -58,10 +60,7 @@ def get_image(item_id):
     item = MenuItem.query.get_or_404(item_id)
     if not item.image_data:
         return jsonify({"error": "无图片数据"}), 404
-    return send_file(BytesIO(item.image_data),
-                     mimetype=item.image_mimetype,
-                     as_attachment=False,
-                     attachment_filename=f"item_{item_id}")
+    return send_file(BytesIO(item.image_data), mimetype=item.image_mimetype)
 
 # 结算接口：提交订单并发送邮件
 @app.route("/checkout", methods=["POST"])

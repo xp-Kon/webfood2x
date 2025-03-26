@@ -7,7 +7,7 @@ from io import BytesIO
 from utils import send_email
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://xp-kon.github.io/webfood2xsite/"}})
+CORS(app)
 
 # 数据库配置（请将DATABASE_URL替换为Railway提供的PostgreSQL连接字符串）
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:XdlibJgxZnCzvkTNlcXtmlKZJrHGTmPf@shuttle.proxy.rlwy.net:22849/railway")

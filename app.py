@@ -14,7 +14,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # 数据库配置（请将DATABASE_URL替换为Railway提供的PostgreSQL连接字符串）
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@hostname:port/dbname")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:XdlibJgxZnCzvkTNlcXtmlKZJrHGTmPf@shuttle.proxy.rlwy.net:22849/railway")
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 db = SQLAlchemy(app)
 

@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from utils import send_email
+
 app = Flask(__name__)
 CORS(app)
 
@@ -16,7 +17,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:XdlibJgxZnCzvkTNlcXtmlKZJrHGTmPf@postgres.railway.internal:5432/railway")
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 db = SQLAlchemy(app)
-db.init_app(app)
 from models import MenuItem
 
 def allowed_file(filename):

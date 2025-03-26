@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from io import BytesIO
 from utils import send_email
 from models import MenuItem
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})  # 解决跨域问题
 
